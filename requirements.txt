@@ -1,0 +1,6 @@
+pymongo
+bs4
+mongoengine
+requests
+pyTelegramBotApi
+telebot
