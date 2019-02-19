@@ -9,7 +9,7 @@ import math
 
 bot = telebot.TeleBot(BOT_TOKEN)
 
-myclient = pymongo.MongoClient(MONGODB_URI)
+myclient = pymongo.MongoClient('mongodb://heroku_w959rndk:8a5t3Ce9uThkMJe@ds341605.mlab.com:41605/heroku_w959rndk')
 mydb = myclient["mydatabase"]
 mycol = mydb["matches"]
 
