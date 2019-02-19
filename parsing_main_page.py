@@ -10,8 +10,6 @@ import math
 bot = telebot.TeleBot(BOT_TOKEN)
 
 myclient = pymongo.MongoClient(MONGODB_URI)
-dblist = myclient.list_database_names()
-db = myclient.test
 mydb = myclient["mydatabase"]
 mycol = mydb["matches"]
 
