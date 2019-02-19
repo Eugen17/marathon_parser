@@ -1,12 +1,10 @@
-import requests
-from bs4 import BeautifulSoup
 import pymongo
 from match import *
 from parsing_page import get_soup, get_handicap, get_handicap_by_result, get_id_match
 import time
 from datetime import datetime
 import telebot
-from config import BOT_TOKEN, CHAT, TOURNAMENTS
+from config import BOT_TOKEN, CHAT, TOURNAMENTS, CeF
 import math
 
 bot = telebot.TeleBot(BOT_TOKEN)
@@ -24,8 +22,10 @@ send_content = "Дата: {0}\n" + \
                "Игрок 2: *{5}* (*{6}*)\n" + \
                "Тотал в начале: *{7}*\n" + \
                "Счет: {8}\n" + \
-                "Тотал новый: *{9}*\n" + \
-                "Соотношения реального тотала и нового: *{10}*"
+               "Тотал новый: *{9}*\n" + \
+               "Соотношения реального тотала и нового: *{10}*"
+
+
 def get_results(html):
     results = []
     return get_soup(html).find_all('div', {'class': 'cl-left red'})
@@ -39,11 +39,12 @@ def get_matches_with_good_results(html):
 
 
 def get_real_total(s):
-    k = s.replace('(', ':').replace(')',':').replace(',',':').split(':')
+    k = s.replace('(', ':').replace(')', ':').replace(',', ':').split(':')
     p = 0
     for i in k[2:-1]:
         p += int(i.split()[0])
     return p
+
 
 def div_by_result(result):
     id = get_id_match(result)
@@ -62,31 +63,29 @@ def div_by_result(result):
     return matches
 
 
-
-
-def parse(html):
+def parse(html, Cf):
     for i in get_results(html):
         if i.text.split()[0] == '2:0' or i.text.split()[0] == '0:2':
             if len(Match.objects(ID=get_id_match(i), posted=False)) > 0 and len(i.text) > 16:
                 new_match = Match.objects(ID=get_id_match(i))[0]
                 new_match.posted = True
                 new_match.save()
-                if math.fabs(new_match.player1k - new_match.player2k) <= 0.8:
+                if math.fabs(new_match.player1k - new_match.player2k) <= Cf:
                     finish_total = get_handicap_by_result(i)
                     cof = finish_total - get_real_total(i.text)
-                    bot.send_message('-1001353156070', text=send_content.format(new_match.date,
-                                              new_match.time,
-                                              new_match.tournament,
-                                              new_match.player1,
-                                              new_match.player1k,
-                                              new_match.player2,
-                                              new_match.player2k,
-                                              new_match.start_total,
-                                              i.text,
-                                              finish_total,
-                                              cof
-                                                                       ),
-                     parse_mode='markdown')
+                    bot.send_message(CHAT, text=send_content.format(new_match.date,
+                                                                    new_match.time,
+                                                                    new_match.tournament,
+                                                                    new_match.player1,
+                                                                    new_match.player1k,
+                                                                    new_match.player2,
+                                                                    new_match.player2k,
+                                                                    new_match.start_total,
+                                                                    i.text,
+                                                                    finish_total,
+                                                                    cof
+                                                                    ),
+                                     parse_mode='markdown')
 
         if i.text.split()[0] == '0:0':
             try:
@@ -95,7 +94,7 @@ def parse(html):
             except:
                 x = div_by_result(i)
                 for j in TOURNAMENTS:
-                    if x['tournament'].find(j) >= 0 :
+                    if x['tournament'].find(j) >= 0:
                         Match(time=str(datetime.now()).split()[1].split('.')[0],
                               date=str(datetime.now()).split()[0],
                               ID=get_id_match(i),
@@ -107,14 +106,13 @@ def parse(html):
                               tournament=x['tournament']).save()
 
 
-
 if __name__ == "__main__":
     while True:
-         try:
+        try:
             time.sleep(5)
-            parse("https://www.marathonbet.com/su/live/414329")
-         except Exception as e:
-             print(e)
+            parse("https://www.marathonbet.com/su/live/414329", CeF)
+        except Exception as e:
+            print(e)
 
     # x = Match(start_total = 9)
     # x.save()

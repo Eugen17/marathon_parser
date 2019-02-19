@@ -1,0 +1,4 @@
+run:
+  worker:
+    command:
+      - python parsing_main_page.py
