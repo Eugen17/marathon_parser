@@ -1,1 +1,1 @@
-web: python parsing_main_page.py
+worker: python parsing_main_page.py
