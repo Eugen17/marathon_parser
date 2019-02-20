@@ -1,4 +1,5 @@
 import pymongo
+from pymongo import MongoClient
 from match import *
 from parsing_page import get_soup, get_handicap, get_handicap_by_result, get_id_match
 import time
@@ -6,12 +7,19 @@ from datetime import datetime
 import telebot
 from config import BOT_TOKEN, CHAT, TOURNAMENTS, CeF
 import math
-
+MONGO_HOST ="ds223685.mlab.com"
+MONGO_PORT = 23685
+MONGO_DB ="mydatabase"
+MONGO_USER ="heroku_xs74xv52"
+MONGO_PASS ="6ak8s2geflvkb2tl3rudf5bikn"
+connection = MongoClient(MONGO_HOST, MONGO_PORT)
+db = connection[MONGO_DB]
+db.authenticate(MONGO_USER, MONGO_PASS)
 bot = telebot.TeleBot(BOT_TOKEN)
 url = 'mongodb://heroku_xs74xv52:6ak8s2geflvkb2tl3rudf5bikn@ds223685.mlab.com:23685'
-myclient = pymongo.MongoClient(url)
-mydb = myclient["mydatabase"]
-mycol = mydb["matches"]
+#myclient = pymongo.MongoClient(url)
+#mydb = myclient["mydatabase"]
+mycol = db["matches"]
 
 send_content = "Дата: {0}\n" + \
                "Время: {1}\n" + \
