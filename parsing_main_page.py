@@ -68,8 +68,6 @@ def parse(html, Cf):
         if i.text.split()[0] == '2:0' or i.text.split()[0] == '0:2':
             if len(Match.objects(ID=get_id_match(i), posted=False)) > 0 and len(i.text) > 16:
                 new_match = Match.objects(ID=get_id_match(i))[0]
-                new_match.posted = True
-                new_match.save()
                 if math.fabs(new_match.player1k - new_match.player2k) <= Cf:
                     finish_total = get_handicap_by_result(i)
                     cof = finish_total - get_real_total(i.text)
@@ -86,7 +84,11 @@ def parse(html, Cf):
                                                                     cof
                                                                     ),
                                      parse_mode='markdown')
-
+                    new_match.posted = True
+                    new_match.save()
+                else:
+                    new_match.posted = True
+                    new_match.save()
         if i.text.split()[0] == '0:0':
             try:
                 Match.objects.get(ID=get_id_match(i))
