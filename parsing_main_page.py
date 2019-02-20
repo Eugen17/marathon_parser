@@ -8,7 +8,7 @@ from config import BOT_TOKEN, CHAT, TOURNAMENTS, CeF
 import math
 
 bot = telebot.TeleBot(BOT_TOKEN)
-url = 'mongodb://heroku_xs74xv52:6ak8s2geflvkb2tl3rudf5bikn@ds223685.mlab.com:23685/heroku_xs74xv52'
+url = 'mongodb://heroku_xs74xv52:6ak8s2geflvkb2tl3rudf5bikn@ds223685.mlab.com:23685'
 myclient = pymongo.MongoClient(url)
 mydb = myclient["mydatabase"]
 mycol = mydb["matches"]
